@@ -1,4 +1,4 @@
-# Serrure-connecte
+# Serrure-connectée
 
 ## Pour commencer
 

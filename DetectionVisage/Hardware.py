@@ -78,12 +78,16 @@ class Hardware:
         self.led.on()
 
     def EcritureLCD(self,message):
-        if message == "OK":
-            pass
-        elif message == "Refuse":
-            pass
-        else:
-            pass
+        try:
+            self.lcd = CharLCD(cols=16, rows=2, pin_rs=37, pin_e=35, pins_data=[33, 31, 29, 23])
+            if message == "OK":
+                self.lcd.write_string(u'Ouvert')
+            elif message == "Refuse":
+                self.lcd.write_string(u'Ferme')
+            else:
+                self.lcd.write_string(u'Patientez')
+        except:
+            pass 
 
 if __name__ == '__main__':
 

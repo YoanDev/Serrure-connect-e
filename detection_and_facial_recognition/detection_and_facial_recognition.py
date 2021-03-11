@@ -1,4 +1,5 @@
 # Source Code - Defend Intelligence
+# coding=utf-8
 import cv2
 import dlib
 import PIL.Image
@@ -23,7 +24,8 @@ face_detector = dlib.get_frontal_face_detector()
 print('[INFO] Importing pretrained model..')
 
 
-def transform(image, face_locations):
+    
+def transform(self,image, face_locations):
     coord_faces = []
     for face in face_locations:
         rect = face.top(), face.right(), face.bottom(), face.left()
@@ -32,7 +34,7 @@ def transform(image, face_locations):
     return coord_faces
 
 
-def encode_face(image):
+def encode_face(self,image):
     face_locations = face_detector(image, 1) # détecte les positions de l'ensemble des visages sur l'image et renvoie cela dans un tab (face_locations)   
     face_encodings_list = []
     landmarks_list = []
@@ -47,7 +49,7 @@ def encode_face(image):
     return face_encodings_list, face_locations, landmarks_list
 
 
-def easy_face_reco(frame, known_face_encodings, known_face_names):  # fait la comparaison des visages stockés en BD et ceux récupérés en entrée
+def easy_face_reco(self,frame, known_face_encodings, known_face_names):  # fait la comparaison des visages stockés en BD et ceux récupérés en entrée
     rgb_small_frame = frame[:, :, ::-1]
     # ENCODING FACE
     face_encodings_list, face_locations_list, landmarks_list = encode_face(rgb_small_frame) # détecte les positions, détecte l'ensemble des 68 points et enregistre dans un tableau l'ensemble des visages encodés du frame 
@@ -68,6 +70,7 @@ def easy_face_reco(frame, known_face_encodings, known_face_names):  # fait la co
             first_match_index = result.index(True) # partie ouverture de la sérrure automatique à rajouter
             name = known_face_names[first_match_index]
         else:
+            cv2.imwrite("test.png", frame)
             name = "Unknown_visage"  # partie interaction avec le propriétaire à rajouter et ouverture ou non de la sérrure
         face_names.append(name)
 
@@ -80,7 +83,7 @@ def easy_face_reco(frame, known_face_encodings, known_face_names):  # fait la co
     #    for (x, y) in shape:
     #        cv2.circle(frame, (x, y), 1, (255, 0, 255), -1)
 
-def return_infrarouge():
+def return_infrarouge(self):
     #return random.choice([0,1])
     return random.randint(1, 100)
 

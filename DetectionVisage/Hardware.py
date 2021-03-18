@@ -1,7 +1,8 @@
 import cv2
 import socket
 import threading
-import base64
+from gpiozero import LED
+#from RPLCD.gpio import CharLCD
 
 class MonThread1 (threading.Thread):
     def __init__(self):
@@ -11,15 +12,20 @@ class MonThread1 (threading.Thread):
         Hardware1 = Hardware()
         Hardware1.EnvoieImage()
 
-class MonThread2 (threading.Thread):
-    def __init__(self):
-        threading.Thread.__init__(self)
-
-    def run(self):
-        Hardware1 = Hardware()
-        Hardware1.EnvoieImage()
+# class MonThread2 (threading.Thread):
+#     def __init__(self):
+#         threading.Thread.__init__(self)
+#
+#     def run(self):
+#         Hardware1 = Hardware()
+#         Hardware1.EnvoieImage()
 
 class Hardware:
+
+    def __init__(self):
+        self.HOST = '172.20.10.4'
+        self.PORT = 12345
+        #self.lcd = CharLCD(cols=16, rows=2, pin_rs=37, pin_e=35, pins_data=[33, 31, 29, 23])
 
     def detectVisage(self):
         cap = cv2.VideoCapture(0)
@@ -44,11 +50,10 @@ class Hardware:
         cap.release()
 
     def EnvoieImage(self):
-        HOST = '172.20.10.4'
-        PORT = 12345
+
         client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        client.connect((HOST, PORT))
-        print('Connexion vers ' + HOST + ':' + str(PORT) + ' reussie.')
+        client.connect((self.HOST, self.PORT))
+        print('Connexion vers ' + self.HOST + ':' + str(self.PORT) + ' reussie.')
 
         f = open('test.png', 'rb')
         print('Sending...')
@@ -67,6 +72,18 @@ class Hardware:
 
         print('Deconnexion')
         client.close()
+
+    def AllumLed(self):
+        self.led = LED(17)
+        self.led.on()
+
+    def EcritureLCD(self,message):
+        if message == "OK":
+            pass
+        elif message == "Refuse":
+            pass
+        else:
+            pass
 
 if __name__ == '__main__':
 

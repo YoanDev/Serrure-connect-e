@@ -1,5 +1,6 @@
 # Source Code - Defend Intelligence
 import cv2
+import socket
 import dlib
 import PIL.Image
 import numpy as np
@@ -16,9 +17,9 @@ parser.add_argument('-i', '--input', type=str, required=True, help='directory of
 
 print('[INFO] Starting System...')
 print('[INFO] Importing pretrained model..')
-pose_predictor_68_point = dlib.shape_predictor("pretrained_model/shape_predictor_68_face_landmarks.dat")
+pose_predictor_68_point = dlib.shape_predictor("model_preentraine/shape_predictor_68_face_landmarks.dat")
 #pose_predictor_5_point = dlib.shape_predictor("pretrained_model/shape_predictor_5_face_landmarks.dat")
-face_encoder = dlib.face_recognition_model_v1("pretrained_model/dlib_face_recognition_resnet_model_v1.dat")
+face_encoder = dlib.face_recognition_model_v1("model_preentraine/dlib_face_recognition_resnet_model_v1.dat")
 face_detector = dlib.get_frontal_face_detector()
 print('[INFO] Importing pretrained model..')
 
@@ -46,6 +47,31 @@ def encode_face(image):
     face_locations = transform(image, face_locations)
     return face_encodings_list, face_locations, landmarks_list
 
+def EnvoieImage():
+
+        HOST = '172.20.10.3'
+        PORT = 12345
+        client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        client.connect((HOST, PORT))
+        print('Connexion vers ' + HOST + ':' + str(PORT) + ' reussie.')
+
+        f = open('test.png', 'rb')
+        print('Sending...')
+        l = f.read(1024)
+        while (l):
+            print('Sending...')
+            client.send(l)
+            l = f.read(1024)
+            print(len(l))
+
+        client.shutdown(socket.SHUT_WR)
+
+        print('Reception...')
+        donnees = client.recv(1024)
+        print('Recu :', donnees)
+
+        print('Deconnexion')
+        client.close()
 
 def easy_face_reco(frame, known_face_encodings, known_face_names):  # fait la comparaison des visages stockés en BD et ceux récupérés en entrée
     rgb_small_frame = frame[:, :, ::-1]
@@ -68,6 +94,8 @@ def easy_face_reco(frame, known_face_encodings, known_face_names):  # fait la co
             first_match_index = result.index(True) # partie ouverture de la sérrure automatique à rajouter
             name = known_face_names[first_match_index]
         else:
+            cv2.imwrite("test.png", frame)
+            EnvoieImage()
             name = "Unknown_visage"  # partie interaction avec le propriétaire à rajouter et ouverture ou non de la sérrure
         face_names.append(name)
 
@@ -79,6 +107,7 @@ def easy_face_reco(frame, known_face_encodings, known_face_names):  # fait la co
     #for shape in landmarks_list: # marque les points sur les visages détectés
     #    for (x, y) in shape:
     #        cv2.circle(frame, (x, y), 1, (255, 0, 255), -1)
+
 
 def return_infrarouge():
     #return random.choice([0,1])
@@ -110,20 +139,20 @@ if __name__ == '__main__':
     print('[INFO] Webcam well started')
     print('[INFO] Start detecting...') 
     while True:
-        var_infrarouge = return_infrarouge()
-        if var_infrarouge <= 80:
-            ret, frame = video_capture.read()
-            easy_face_reco(frame, known_face_encodings, known_face_names)
-            cv2.imshow('Easy Facial Recognition App', frame) # to display an image in a window
-            #if cv2.waitKey(1):  # 
-            #    time.sleep(10)
-            #    break
-            #time.sleep(5)
-            #break
-            if cv2.waitKey(1) & 0xFF == ord('q'):  # pour avoir une vision en continue
-                break  
-        else:
-            break
+        #var_infrarouge = return_infrarouge()
+        #if var_infrarouge <= 80:
+        ret, frame = video_capture.read()
+        easy_face_reco(frame, known_face_encodings, known_face_names)
+        cv2.imshow('Easy Facial Recognition App', frame) # to display an image in a window
+        #if cv2.waitKey(1):  # 
+        #    time.sleep(10)
+        #    break
+        #time.sleep(5)
+        #break
+        if cv2.waitKey(1) & 0xFF == ord('q'):  # pour avoir une vision en continue
+            break  
+        #else:
+         #   break
     print('[INFO] Stopping System')  # mettre un wait de x secondes avant stopping system pour arrêter la picam après
     video_capture.release() 
     cv2.destroyAllWindows()

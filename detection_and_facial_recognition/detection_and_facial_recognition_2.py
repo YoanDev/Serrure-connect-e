@@ -14,30 +14,6 @@ import time
 parser = argparse.ArgumentParser(description='Easy Facial Recognition App')
 parser.add_argument('-i', '--input', type=str, required=True, help='directory of input known faces')
 
-
-def transform(image, face_locations):
-    coord_faces = []
-    for face in face_locations:
-        rect = face.top(), face.right(), face.bottom(), face.left()
-        coord_face = max(rect[0], 0), min(rect[1], image.shape[1]), min(rect[2], image.shape[0]), max(rect[3], 0)
-        coord_faces.append(coord_face)
-    return coord_faces
-
-
-def encode_face(image):
-    face_locations = face_detector(image, 1) # détecte les positions de l'ensemble des visages sur l'image et renvoie cela dans un tab (face_locations)   
-    face_encodings_list = []
-    landmarks_list = []
-    for face_location in face_locations:
-        # DETECT FACES
-        shape = pose_predictor_68_point(image, face_location) # détecte l'ensemble des 68 points sur le visage concerné
-        face_encodings_list.append(np.array(face_encoder.compute_face_descriptor(image, shape, num_jitters=1))) # enregistre dans un tableau le visage encodé à partir du model pré-entrainé de reconnaissance faciale
-        # GET LANDMARKS
-        shape = face_utils.shape_to_np(shape)
-        landmarks_list.append(shape)
-    face_locations = transform(image, face_locations)
-    return face_encodings_list, face_locations, landmarks_list
-
 def EnvoieImage():
 
         HOST = '172.20.10.3'
@@ -115,10 +91,6 @@ def easy_face_reco(frame, known_face_encodings, known_face_names):  # fait la co
         font = cv2.FONT_HERSHEY_DUPLEX
         cv2.putText(frame, name, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
 
-
-def return_infrarouge():
-    #return random.choice([0,1])
-    return random.randint(1, 100)
 
 if __name__ == '__main__':
     args = parser.parse_args()

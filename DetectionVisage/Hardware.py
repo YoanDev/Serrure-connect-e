@@ -2,6 +2,7 @@ import cv2
 import socket
 import threading
 from gpiozero import LED
+import face_recognition
 #from RPLCD.gpio import CharLCD
 
 class MonThread1 (threading.Thread):
@@ -12,13 +13,35 @@ class MonThread1 (threading.Thread):
         Hardware1 = Hardware()
         Hardware1.EnvoieImage()
 
-# class MonThread2 (threading.Thread):
-#     def __init__(self):
-#         threading.Thread.__init__(self)
-#
-#     def run(self):
-#         Hardware1 = Hardware()
-#         Hardware1.EnvoieImage()
+class MonThread2 (threading.Thread):
+    def __init__(self):
+        threading.Thread.__init__(self)
+        
+    def func(self):
+        try:
+            picture_of_me = face_recognition.load_image_file("yoan.png")[0]
+            my_face_encoding = face_recognition.face_encodings(picture_of_me)
+        except:
+            pass
+        while True:
+            try:
+                unknown_picture = face_recognition.load_image_file("test.png")
+                unknown_face_encoding = face_recognition.face_encodings(unknown_picture)[0]
+                results = face_recognition.compare_faces([my_face_encoding], unknown_face_encoding)
+                print("step0")
+                if results[0] == True:
+                    print("It's a picture of me!")
+                    print("step1")
+                else:
+                    print("It's not a picture of me!")
+                    print("step2")
+            except:
+                print("except")
+            
+    def run(self):
+        self.func()
+
+
 
 class Hardware:
 
@@ -28,6 +51,8 @@ class Hardware:
         #self.lcd = CharLCD(cols=16, rows=2, pin_rs=37, pin_e=35, pins_data=[33, 31, 29, 23])
 
     def detectVisage(self):
+        th = MonThread2()
+        th.start()
         cap = cv2.VideoCapture(0)
         face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
 
@@ -41,11 +66,10 @@ class Hardware:
                 cv2.rectangle(img, (x, y), (x + w, y + h), (255, 255, 0), 2)
                 cv2.imwrite("test.png", img)
             cv2.imshow('frame', img)
-
-
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
-
+        
+        
         cv2.destroyAllWindows()
         cap.release()
 

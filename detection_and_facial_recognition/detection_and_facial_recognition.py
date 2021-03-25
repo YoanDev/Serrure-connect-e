@@ -9,24 +9,10 @@ from imutils import face_utils
 import argparse
 from pathlib import Path
 import os
-import ntpath
 import time
 import random
 
-parser = argparse.ArgumentParser(description='Easy Facial Recognition App')
-parser.add_argument('-i', '--input', type=str, required=True, help='directory of input known faces')
-
-print('[INFO] Starting System...')
-print('[INFO] Importing pretrained model..')
-pose_predictor_68_point = dlib.shape_predictor("model_preentraine/shape_predictor_68_face_landmarks.dat")
-#pose_predictor_5_point = dlib.shape_predictor("pretrained_model/shape_predictor_5_face_landmarks.dat")
-face_encoder = dlib.face_recognition_model_v1("model_preentraine/dlib_face_recognition_resnet_model_v1.dat")
-face_detector = dlib.get_frontal_face_detector()
-print('[INFO] Importing pretrained model..')
-
-
-    
-def transform(self,image, face_locations):
+def transform(image, face_locations):
     coord_faces = []
     for face in face_locations:
         rect = face.top(), face.right(), face.bottom(), face.left()
@@ -35,7 +21,11 @@ def transform(self,image, face_locations):
     return coord_faces
 
 
-def encode_face(self,image):
+def encode_face(image):
+    face_detector = dlib.get_frontal_face_detector()
+    pose_predictor_68_point = dlib.shape_predictor("model_preentraine/shape_predictor_68_face_landmarks.dat")
+    face_encoder = dlib.face_recognition_model_v1("model_preentraine/dlib_face_recognition_resnet_model_v1.dat")
+    
     face_locations = face_detector(image, 1) # détecte les positions de l'ensemble des visages sur l'image et renvoie cela dans un tab (face_locations)   
     face_encodings_list = []
     landmarks_list = []
@@ -75,7 +65,7 @@ def EnvoieImage():
         print('Deconnexion')
         client.close()
 
-def easy_face_reco(self,frame, known_face_encodings, known_face_names):  # fait la comparaison des visages stockés en BD et ceux récupérés en entrée
+def easy_face_reco(frame, known_face_encodings, known_face_names):  # fait la comparaison des visages stockés en BD et ceux récupérés en entrée
     rgb_small_frame = frame[:, :, ::-1]
     # ENCODING FACE
     face_encodings_list, face_locations_list, landmarks_list = encode_face(rgb_small_frame) # détecte les positions, détecte l'ensemble des 68 points et enregistre dans un tableau l'ensemble des visages encodés du frame 
@@ -84,62 +74,67 @@ def easy_face_reco(self,frame, known_face_encodings, known_face_names):  # fait 
         if len(face_encoding) == 0:
             return np.empty((0))
         # CHECK DISTANCE BETWEEN KNOWN FACES AND FACES DETECTED
-        vectors = np.linalg.norm(known_face_encodings - face_encoding, axis=1)
-        tolerance = 0.5 
-        result = []
-        for vector in vectors:
-            if vector <= tolerance:
-                result.append(True)
-            else:
-                result.append(False)
-        if True in result:
-            first_match_index = result.index(True) # partie ouverture de la sérrure automatique à rajouter
-            name = known_face_names[first_match_index]
-        else:
-            cv2.imwrite("test.png", frame)
-<<<<<<< HEAD
-=======
-            EnvoieImage()
->>>>>>> 778b80c9d27d546278e3b451c5fe46377713487e
-            name = "Unknown_visage"  # partie interaction avec le propriétaire à rajouter et ouverture ou non de la sérrure
-        face_names.append(name)
+        try:
+            vectors = np.linalg.norm(known_face_encodings - face_encoding, axis=1)
+       
+            
+            tolerance = 0.5 
+            result = []
+            for vector in vectors:
+                if vector <= tolerance:
+                    result.append(True)
+                else:
+                    result.append(False)
+            if True in result:
+                first_match_index = result.index(True) # partie ouverture de la sérrure automatique à rajouter
+                name = known_face_names[first_match_index]
+        except:
+            pass
+        #else:
+        #    cv2.imwrite("test.png", frame)
+        #    EnvoieImage()
+        #    name = "Unknown_visage"  # partie interaction avec le propriétaire à rajouter et ouverture ou non de la sérrure
+        #face_names.append(name)
 
     for (top, right, bottom, left), name in zip(face_locations_list, face_names):  # dessine le cadre en vert et écrit en dessous le nom du visage (s'il est connu) ou visage non connu dans le cas contraire
         cv2.rectangle(frame, (left, top), (right, bottom), (0, 255, 0), 2)
         cv2.rectangle(frame, (left, bottom - 30), (right, bottom), (0, 255, 0), cv2.FILLED)
         cv2.putText(frame, name, (left + 2, bottom - 2), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 1)
 
-    #for shape in landmarks_list: # marque les points sur les visages détectés
-    #    for (x, y) in shape:
-    #        cv2.circle(frame, (x, y), 1, (255, 0, 255), -1)
+    for shape in landmarks_list: # marque les points sur les visages détectés
+        for (x, y) in shape:
+            cv2.circle(frame, (x, y), 1, (255, 0, 255), -1)
 
-<<<<<<< HEAD
-def return_infrarouge(self):
-=======
+
 
 def return_infrarouge():
->>>>>>> 778b80c9d27d546278e3b451c5fe46377713487e
     #return random.choice([0,1])
     return random.randint(1, 100)
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Easy Facial Recognition App')
+    parser.add_argument('-i', '--input', type=str, required=True, help='directory of input known faces')
     args = parser.parse_args()
-
+    known_face_names = []
+    
     print('[INFO] Importing faces...')
     face_to_encode_path = Path(args.input)
     files = [file_ for file_ in face_to_encode_path.rglob('*.jpg')]
 
     for file_ in face_to_encode_path.rglob('*.png'):
         files.append(file_)
-    if len(files)==0:
+    if len(files)==0:   
         raise ValueError('No faces detect in the directory: {}'.format(face_to_encode_path))
-    known_face_names = [os.path.splitext(ntpath.basename(file_))[0] for file_ in files] #  on charge dans un tab l'ensemble des noms des différentes images en BD ouvert sous forme de files
-
+    
+    for file_ in files:
+        print(file_)
+        known_face_names.append(file_)
+        
     known_face_encodings = []
     for file_ in files:
         image = PIL.Image.open(file_)  #  on charge dans un tab l'ensemble des images/visages en BD à partir des différents files traités à l'aide de la library pillow
         image = np.array(image)
-        face_encoded = encode_face(image)[0][0]
+        face_encoded = encode_face(image)
         known_face_encodings.append(face_encoded)   #  on charge dans un tab l'ensemble des visages de la BD encodés
 
     print('[INFO] Faces well imported')

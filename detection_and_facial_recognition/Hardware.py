@@ -6,14 +6,6 @@ import RPi.GPIO as GPIO
 import face_recognition
 #from RPLCD.gpio import CharLCD
 
-class MonThread1 (threading.Thread):
-    def __init__(self):
-        threading.Thread.__init__(self)
-
-    def run(self):
-        Hardware1 = Hardware()
-        Hardware1.EnvoieImage()
-
 
 class Hardware:
 
@@ -68,8 +60,11 @@ class Hardware:
         c.close
     
     def PresenceDePersonne(self):
-        if GPIO.input(capteur):
-            print("mouvement")
+        while True:
+            if GPIO.input(capteur):
+                print("mouvement")
+                return "mouvement"
+        
     
     def AllumLed(self):
         self.led.on()

@@ -35,9 +35,11 @@ class reco:
                 if True in matches:
                      first_match_index = matches.index(True)
                      name = known_face_names[first_match_index]
+                     return "open"
                 else:
                     cv2.imwrite("test.png", frame)
                     name = "Unknown_visage"  # partie interaction avec le propriétaire à rajouter et ouverture ou non de la sérrure
+                    return "Ne sait pas"
 
                 # Or instead, use the known face with the smallest distance to the new face
                 #face_distances = face_recognition.face_distance(known_face_encodings, face_encoding)
@@ -45,25 +47,25 @@ class reco:
                 #if matches[best_match_index]:
                 #    name = known_face_names[best_match_index]
 
-                face_names.append(name)
+                #face_names.append(name)
 
-        process_this_frame = not process_this_frame
+        #process_this_frame = not process_this_frame
 
         # Display the results
-        for (top, right, bottom, left), name in zip(face_locations, face_names):
+        #for (top, right, bottom, left), name in zip(face_locations, face_names):
             # Scale back up face locations since the frame we detected in was scaled to 1/4 size
-            top *= 4
-            right *= 4
-            bottom *= 4
-            left *= 4
+            #top *= 4
+            #right *= 4
+            #bottom *= 4
+            #left *= 4
 
             # Draw a box around the face
-            cv2.rectangle(frame, (left, top), (right, bottom), (0, 0, 255), 2)
+            #cv2.rectangle(frame, (left, top), (right, bottom), (0, 0, 255), 2)
 
             # Draw a label with a name below the face
-            cv2.rectangle(frame, (left, bottom - 35), (right, bottom), (0, 0, 255), cv2.FILLED)
-            font = cv2.FONT_HERSHEY_DUPLEX
-            cv2.putText(frame, name, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
+            #cv2.rectangle(frame, (left, bottom - 35), (right, bottom), (0, 0, 255), cv2.FILLED)
+            #font = cv2.FONT_HERSHEY_DUPLEX
+            #cv2.putText(frame, name, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
 
     def intro(self):
         parser = argparse.ArgumentParser(description='Easy Facial Recognition App')
@@ -91,9 +93,11 @@ class reco:
         print('[INFO] Starting Webcam...') # qui sera déclenché pour notre cas par le OK du capteur infrarouge (webcam = picam pour nous) 
         video_capture = cv2.VideoCapture(0)
         print('[INFO] Start detecting...') 
-        while True:
+        for i in range (10000):
             ret, frame = video_capture.read()
-            self.easy_face_reco(frame, known_face_encodings, known_face_names)
+            rec = self.easy_face_reco(frame, known_face_encodings, known_face_names)
+            if rec = "open":
+                return "open"
             cv2.imshow('Easy Facial Recognition App', frame) # to display an image in a window
 
             if cv2.waitKey(1) & 0xFF == ord('q'):  # pour avoir une vision en continue
@@ -102,7 +106,5 @@ class reco:
         print('[INFO] Stopping System')  # mettre un wait de x secondes avant stopping system pour arrêter la picam après
         video_capture.release() 
         cv2.destroyAllWindows()
+        return "Ne sait pas"
     
-if __name__ == '__main__':
-    obj = reco()
-    obj.intro()

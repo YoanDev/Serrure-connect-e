@@ -22,8 +22,8 @@ class Hardware:
         self.PORT = 12345
         self.led = LED(17)
         GPIO.setmode(GPIO.BCM)
-        #self.capteur = 7
-        #GPIO.setup(capteur,GPIO.IN)
+        self.capteur = 7
+        GPIO.setup(self.capteur,GPIO.IN)
         #self.lcd = CharLCD(cols=16, rows=2, pin_rs=37, pin_e=35, pins_data=[33, 31, 29, 23])
 
 
@@ -52,17 +52,22 @@ class Hardware:
         
     def ReceptionApplication(self):
         s = socket.socket()
-        host = "192.168.1.19"
-        port = 12345
+        self.HOST = "192.168.1.19"
+        self.PORT = 12345
         s.bind((host,port))
         print("step1")
-        s.listen(3)
+        s.listen(1)
         print(host)
   
         c, addr = s.accept()
         print("Receiving...")
         l = c.recv(1024)
-        print(l)
+        if l == b'on':
+            print("open")
+            return "open"
+        else:
+            print("close")
+            return "close"
         c.close
     
     def PresenceDePersonne(self):

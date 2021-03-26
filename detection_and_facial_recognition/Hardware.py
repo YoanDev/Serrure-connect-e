@@ -54,11 +54,8 @@ class Hardware:
         s = socket.socket()
         self.HOST = "192.168.1.19"
         self.PORT = 12345
-        s.bind((host,port))
-        print("step1")
+        s.bind((self.HOST,self.PORT))
         s.listen(1)
-        print(host)
-  
         c, addr = s.accept()
         print("Receiving...")
         l = c.recv(1024)
@@ -92,5 +89,4 @@ class Hardware:
         except:
             pass 
 
-m1=Hardware()
-m1.ReceptionApplication()
+

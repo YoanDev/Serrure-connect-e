@@ -4,7 +4,7 @@ from detection_and_facial_recognition_2 import reco
 #exemple
 m1 = Hardware()
 m2 = reco()
-
+m1.SetLed()
 while True:
     
     #etape 1: On détecte un mouvement
@@ -22,6 +22,8 @@ while True:
         if y == "open":
             print("bravo")
             m1.AllumLed()
+        elif y == "Aucun visage":
+            pass
         else:
             try:
                 print("envoie")
@@ -34,6 +36,6 @@ while True:
             if z == "open":
                 print("bravo2")
                 m1.AllumLed()
-            
+                m2.copy_new_photo()
        
 

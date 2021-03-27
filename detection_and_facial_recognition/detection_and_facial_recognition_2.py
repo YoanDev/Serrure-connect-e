@@ -10,12 +10,15 @@ import time
 from os import listdir
 from os.path import isfile, join
 import sys
+import shutil
+import datetime
 
 class reco:
     def __init__(self):
         pass
     
     def easy_face_reco(self,frame, known_face_encodings, known_face_names):  # fait la comparaison des visages stockés en BD et ceux récupérés en entrée
+        count = 0
         # Resize frame of video to 1/4 size for faster face recognition processing
         small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
         rgb_small_frame = small_frame[:, :, ::-1]    # Convert the image from BGR color (which OpenCV uses) to RGB color (which face_recognition uses)
@@ -26,7 +29,7 @@ class reco:
             face_locations = face_recognition.face_locations(rgb_small_frame)
             face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations)
 
-            face_names = []
+            face_names = []        
             for face_encoding in face_encodings:
                 # See if the face is a match for the known face(s)
                 matches = face_recognition.compare_faces(known_face_encodings, face_encoding, tolerance=0.5)
@@ -37,18 +40,16 @@ class reco:
                      name = known_face_names[first_match_index]
                      return "open"
                 else:
-                    cv2.imwrite("known_faces/test.png", frame)
+                    count += 1          
+                    
+            if len(face_encodings) != 0:   
+                if count == len(face_encodings):
+                    cv2.imwrite("new_faces/test.png", frame)
                     name = "Unknown_visage"  # partie interaction avec le propriétaire à rajouter et ouverture ou non de la sérrure
                     return "Ne sait pas"
-                # Or instead, use the known face with the smallest distance to the new face
-                #face_distances = face_recognition.face_distance(known_face_encodings, face_encoding)
-                #best_match_index = np.argmin(face_distances)
-                #if matches[best_match_index]:
-                #    name = known_face_names[best_match_index]
-
-                face_names.append(name)
-
-        #process_this_frame = not process_this_frame
+            else:
+                return "Aucun visage"
+                
 
         # Display the results
         for (top, right, bottom, left), name in zip(face_locations, face_names):
@@ -99,6 +100,8 @@ class reco:
             ret, frame = video_capture.read()
             rec = self.easy_face_reco(frame, known_face_encodings, known_face_names)
             if rec == "open":
+                video_capture.release() 
+                cv2.destroyAllWindows()
                 return "open"
             cv2.imshow('Easy Facial Recognition App', frame) # to display an image in a window
 
@@ -108,7 +111,16 @@ class reco:
         print('[INFO] Stopping System')  # mettre un wait de x secondes avant stopping system pour arrêter la picam après
         video_capture.release() 
         cv2.destroyAllWindows()
-        return "Ne sait pas"
+        if rec == "Ne sait pas":
+            return "Ne sait pas"
+        else:
+            return "Aucun visage"
+    
+    def copy_new_photo(self):
+        date = datetime.datetime.now()
+        shutil.copy('new_faces/test.png','known_faces/')
+        os.rename('known_faces/test.png','known_faces/'+date.strftime('%s'))
+        os.remove('new_faces/test.png')
 
 
     

@@ -19,13 +19,13 @@ class Hardware:
 
 
     def EnvoieImage(self):
-        host = '172.16.1.202'
+        host = '192.168.43.94'
         port = 1234
         client = socket.socket()
         client.connect((host, port))
         print('Connexion vers ' + host + ':' + str(port) + ' reussie.')
 
-        f = open('known_faces/test.png', 'rb')
+        f = open('new_faces/test.png', 'rb')
         print('Sending...')
         l = f.read(1024)
         while (l):
@@ -40,7 +40,7 @@ class Hardware:
         client.close()
         
     def ReceptionApplication(self):
-        host = '172.16.11.184'
+        host = '192.168.43.82'
         port = 1234
         print("reception")
         s = socket.socket()
@@ -76,10 +76,15 @@ class Hardware:
     
     def AllumLed(self):
         GPIO.setmode(GPIO.BCM)                                                        
-        GPIO.setup(23, GPIO.OUT)
-        GPIO.output(23, GPIO.HIGH)
+        GPIO.setup(2, GPIO.OUT)
+        GPIO.output(2, GPIO.HIGH)
         time.sleep(10)                 
-        GPIO.output(23, GPIO.LOW)     
+        GPIO.output(2, GPIO.LOW)
+        
+    def SetLed(self):
+        GPIO.setmode(GPIO.BCM)                                                        
+        GPIO.setup(2, GPIO.OUT)                
+        GPIO.output(2, GPIO.LOW) 
         
     def EtteindLed(self):
         self.led.off()

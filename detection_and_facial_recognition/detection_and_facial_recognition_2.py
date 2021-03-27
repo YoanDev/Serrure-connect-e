@@ -105,6 +105,7 @@ class reco:
                 return "open"
             cv2.imshow('Easy Facial Recognition App', frame) # to display an image in a window
 
+
             if cv2.waitKey(1) & 0xFF == ord('q'):  # pour avoir une vision en continue
                 break  
 

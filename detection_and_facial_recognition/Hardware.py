@@ -46,6 +46,7 @@ class Hardware:
         s = socket.socket()
         s.bind((host,port))
         s.listen()
+        
         c, addr = s.accept()
         print("Receiving...")
         l = c.recv(1024)

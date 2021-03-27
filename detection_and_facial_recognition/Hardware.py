@@ -12,15 +12,14 @@ import time
 class Hardware:
 
     def __init__(self):
-        self.HOST = '192.168.43.82'
-        self.PORT = 12345
+        
         self.led = LED(17)
         
         #self.lcd = CharLCD(cols=16, rows=2, pin_rs=37, pin_e=35, pins_data=[33, 31, 29, 23])
 
 
     def EnvoieImage(self):
-        host = '192.168.43.94'
+        host = '172.16.1.202'
         port = 1234
         client = socket.socket()
         client.connect((host, port))
@@ -41,10 +40,12 @@ class Hardware:
         client.close()
         
     def ReceptionApplication(self):
+        host = '172.16.11.184'
+        port = 1234
         print("reception")
         s = socket.socket()
-        s.bind((self.HOST,self.PORT))
-        s.listen(1)
+        s.bind((host,port))
+        s.listen()
         c, addr = s.accept()
         print("Receiving...")
         l = c.recv(1024)
@@ -73,7 +74,11 @@ class Hardware:
         
     
     def AllumLed(self):
-        self.led.on()
+        GPIO.setmode(GPIO.BCM)                                                        
+        GPIO.setup(23, GPIO.OUT)
+        GPIO.output(23, GPIO.HIGH)
+        time.sleep(10)                 
+        GPIO.output(23, GPIO.LOW)     
         
     def EtteindLed(self):
         self.led.off()

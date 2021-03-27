@@ -23,13 +23,17 @@ while True:
             print("bravo")
             m1.AllumLed()
         else:
-            print("envoie")
-            m1.EnvoieImage()
+            try:
+                print("envoie")
+                m1.EnvoieImage()
+            except:
+                pass
             z = m1.ReceptionApplication()
             
             #etape 7: On agit selon la réponse du smartphone
             if z == "open":
                 print("bravo2")
                 m1.AllumLed()
+            
        
 

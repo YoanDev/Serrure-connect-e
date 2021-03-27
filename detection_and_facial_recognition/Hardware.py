@@ -4,6 +4,7 @@ import threading
 from gpiozero import LED
 import RPi.GPIO as GPIO
 import face_recognition
+import time
 #from RPLCD.gpio import CharLCD
 
 
@@ -13,9 +14,7 @@ class Hardware:
         self.HOST = '172.20.10.4'
         self.PORT = 12345
         self.led = LED(17)
-        GPIO.setmode(GPIO.BCM)
-        self.capteur = 7
-        GPIO.setup(self.capteur,GPIO.IN)
+        
         #self.lcd = CharLCD(cols=16, rows=2, pin_rs=37, pin_e=35, pins_data=[33, 31, 29, 23])
 
 
@@ -60,10 +59,18 @@ class Hardware:
         c.close
     
     def PresenceDePersonne(self):
+        GPIO.setmode(GPIO.BCM)
+        capteur = 7
+        GPIO.setup(capteur,GPIO.IN)
         while True:
+            time.sleep(30)
             if GPIO.input(capteur):
                 print("mouvement")
-                return "mouvement"
+                #return "mouvement"
+            else:
+                print("No mouv")
+                
+            #time.sleep(0.5)
         
     
     def AllumLed(self):

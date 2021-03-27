@@ -20,13 +20,16 @@ while True:
         
         #etape 6: Si le visage est connu on ouvre, sinon on demande au smartphone
         if y == "open":
+            print("bravo")
             m1.AllumLed()
         else:
+            print("envoie")
             m1.EnvoieImage()
             z = m1.ReceptionApplication()
             
             #etape 7: On agit selon la réponse du smartphone
             if z == "open":
+                print("bravo2")
                 m1.AllumLed()
        
 

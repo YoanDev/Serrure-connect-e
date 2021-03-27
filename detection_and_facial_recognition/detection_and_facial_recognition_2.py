@@ -9,6 +9,7 @@ import random
 import time
 from os import listdir
 from os.path import isfile, join
+import sys
 
 class reco:
     def __init__(self):
@@ -28,17 +29,17 @@ class reco:
             face_names = []
             for face_encoding in face_encodings:
                 # See if the face is a match for the known face(s)
-                matches = face_recognition.compare_faces(known_face_encodings, face_encoding)
+                matches = face_recognition.compare_faces(known_face_encodings, face_encoding, tolerance=0.5)
 
                  # If a match was found in known_face_encodings, just use the first one.
                 if True in matches:
                      first_match_index = matches.index(True)
                      name = known_face_names[first_match_index]
-                     #return "open"
+                     return "open"
                 else:
-                    cv2.imwrite("test.png", frame)
+                    cv2.imwrite("known_faces/test.png", frame)
                     name = "Unknown_visage"  # partie interaction avec le propriétaire à rajouter et ouverture ou non de la sérrure
-                    #return "Ne sait pas"
+                    return "Ne sait pas"
                 # Or instead, use the known face with the smallest distance to the new face
                 #face_distances = face_recognition.face_distance(known_face_encodings, face_encoding)
                 #best_match_index = np.argmin(face_distances)
@@ -66,6 +67,10 @@ class reco:
             cv2.putText(frame, name, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
 
     def intro(self):
+        
+        # Define the duration (in seconds) of the video capture here
+        capture_duration = 10
+    
         print('[INFO] Importing faces...')
         face_to_encode_path = [f for f in listdir("known_faces") if isfile(join("known_faces", f))]
         
@@ -77,19 +82,24 @@ class reco:
         
         for file_ in face_to_encode_path:
             image = face_recognition.load_image_file("known_faces/"+file_)
-            face_encoded = face_recognition.face_encodings(image)[0]
+            try:
+                face_encoded = face_recognition.face_encodings(image)[0]
+            except IndexError as e:
+                print(e)
+                pass
+                #sys.exit(1)
             known_face_encodings.append(face_encoded)   #  on charge dans un tab l'ensemble des visages de la BD encodés
         print('[INFO] Faces well imported')
         print('[INFO] Starting Webcam...') # qui sera déclenché pour notre cas par le OK du capteur infrarouge (webcam = picam pour nous) 
         video_capture = cv2.VideoCapture(0)
         #changer la taille de la video ici avec video_capture.set(cv2.CAP_PROP_FRAME_HEIGHT,240)
         print('[INFO] Start detecting...') 
-        #for i in range (10000):
-        while True:
+        start_time = time.time()
+        while( int(time.time() - start_time) < capture_duration ):
             ret, frame = video_capture.read()
             rec = self.easy_face_reco(frame, known_face_encodings, known_face_names)
-            #if rec == "open":
-                #return "open"
+            if rec == "open":
+                return "open"
             cv2.imshow('Easy Facial Recognition App', frame) # to display an image in a window
 
             if cv2.waitKey(1) & 0xFF == ord('q'):  # pour avoir une vision en continue
@@ -100,6 +110,5 @@ class reco:
         cv2.destroyAllWindows()
         return "Ne sait pas"
 
-m1=reco()
-m1.intro()
+
     

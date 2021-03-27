@@ -5,13 +5,14 @@ from gpiozero import LED
 import RPi.GPIO as GPIO
 import face_recognition
 import time
+
 #from RPLCD.gpio import CharLCD
 
 
 class Hardware:
 
     def __init__(self):
-        self.HOST = '172.20.10.4'
+        self.HOST = '192.168.43.82'
         self.PORT = 12345
         self.led = LED(17)
         
@@ -19,11 +20,13 @@ class Hardware:
 
 
     def EnvoieImage(self):
-        client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        client.connect((self.HOST, self.PORT))
-        print('Connexion vers ' + self.HOST + ':' + str(self.PORT) + ' reussie.')
+        host = '192.168.43.94'
+        port = 1234
+        client = socket.socket()
+        client.connect((host, port))
+        print('Connexion vers ' + host + ':' + str(port) + ' reussie.')
 
-        f = open('test.png', 'rb')
+        f = open('known_faces/test.png', 'rb')
         print('Sending...')
         l = f.read(1024)
         while (l):
@@ -34,17 +37,12 @@ class Hardware:
 
         client.shutdown(socket.SHUT_WR)
 
-        print('Reception...')
-        donnees = client.recv(1024)
-        print('Recu :', donnees)
-
         print('Deconnexion')
         client.close()
         
     def ReceptionApplication(self):
+        print("reception")
         s = socket.socket()
-        self.HOST = "192.168.1.19"
-        self.PORT = 12345
         s.bind((self.HOST,self.PORT))
         s.listen(1)
         c, addr = s.accept()
@@ -62,11 +60,12 @@ class Hardware:
         GPIO.setmode(GPIO.BCM)
         capteur = 7
         GPIO.setup(capteur,GPIO.IN)
+        time.sleep(10)
         while True:
-            time.sleep(30)
+            time.sleep(0.1)
             if GPIO.input(capteur):
                 print("mouvement")
-                #return "mouvement"
+                return "mouvement"
             else:
                 print("No mouv")
                 

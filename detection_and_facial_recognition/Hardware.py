@@ -13,17 +13,14 @@ class Hardware:
 
     def __init__(self):
         
-        self.led = LED(17)
-        
-        #self.lcd = CharLCD(cols=16, rows=2, pin_rs=37, pin_e=35, pins_data=[33, 31, 29, 23])
+        self.LED = LED(17)
+        self.PORT = 1234
 
-
+    # Cette méthode permet d'envoyer une photo au smartphone via TCP
     def EnvoieImage(self):
-        host = '192.168.43.94'
-        port = 1234
-        client = socket.socket()
-        client.connect((host, port))
-        print('Connexion vers ' + host + ':' + str(port) + ' reussie.')
+        host = '192.168.1.11'
+        client = socket.socket() # On ouvre le tunel
+        client.connect((host, self.PORT)) # On connecte le tunel au port
 
         f = open('new_faces/test.png', 'rb')
         print('Sending...')
@@ -39,17 +36,17 @@ class Hardware:
         print('Deconnexion')
         client.close()
         
+    # Cette méthode permet de recevoir une réponse du smartphone via TCP
     def ReceptionApplication(self):
-        host = '192.168.43.82'
-        port = 1234
-        print("reception")
-        s = socket.socket()
-        s.bind((host,port))
-        s.listen()
+        host = '192.168.1.19'
+        print("reception...")
+        s = socket.socket() # On ouvre le tunel
+        s.bind((host,self.PORT)) # On connecte le tunel au port
+        s.listen() # On écoute si un client essaie de se connecter
         
         c, addr = s.accept()
         print("Receiving...")
-        l = c.recv(1024)
+        l = c.recv(1024) # On recoit le message du smartphone
         if l == b'on':
             print("open")
             return "open"
@@ -58,37 +55,43 @@ class Hardware:
             return "close"
         c.close
     
-    def PresenceDePersonne(self):
+    #Cette fonction permet de récupérer les informations du capteurs de mouvement
+    def PresenceDePersonne(self,val):
         GPIO.setmode(GPIO.BCM)
         capteur = 7
         GPIO.setup(capteur,GPIO.IN)
-        time.sleep(10)
+        time.sleep(10)     
         while True:
             time.sleep(0.1)
+            
+            # Le capteur retourne 1 si mouvement
             if GPIO.input(capteur):
                 print("mouvement")
+                return "mouvement"
+            elif val== "n":
                 return "mouvement"
             else:
                 print("No mouv")
                 
             #time.sleep(0.5)
         
-    
+    # Cette fonction permet d'allumer une LED
     def AllumLed(self):
         GPIO.setmode(GPIO.BCM)                                                        
         GPIO.setup(2, GPIO.OUT)
-        GPIO.output(2, GPIO.HIGH)
+        GPIO.output(2, GPIO.HIGH) # On allume
         time.sleep(10)                 
-        GPIO.output(2, GPIO.LOW)
+        GPIO.output(2, GPIO.LOW) # On éteint
         
+    # Cette fonction permet d'initialiser l'état de LED pour qu'elle soit éteinte
     def SetLed(self):
         GPIO.setmode(GPIO.BCM)                                                        
         GPIO.setup(2, GPIO.OUT)                
-        GPIO.output(2, GPIO.LOW) 
+        GPIO.output(2, GPIO.LOW) # On éteint
         
-    def EtteindLed(self):
-        self.led.off()
-
+    # Cette fonction permet d'écrire un message sur un écran LCD
+    # Le matériel n'a pas été mis en place
+    # Cette fonction n'a jamais été testé
     def EcritureLCD(self,message):
         try:
             self.lcd = CharLCD(cols=16, rows=2, pin_rs=37, pin_e=35, pins_data=[33, 31, 29, 23])

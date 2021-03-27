@@ -70,7 +70,7 @@ class reco:
     def intro(self):
         
         # Define the duration (in seconds) of the video capture here
-        capture_duration = 10
+        capture_duration = 20
     
         print('[INFO] Importing faces...')
         face_to_encode_path = [f for f in listdir("known_faces") if isfile(join("known_faces", f))]

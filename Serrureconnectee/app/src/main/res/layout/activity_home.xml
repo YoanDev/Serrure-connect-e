@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@mipmap/back"
+    tools:context=".HomeActivity">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="CONTROLEUR D'ACCES"
+        android:layout_marginTop="90dp"
+        android:gravity="center"
+        android:textSize="30dp"
+        android:background="@drawable/bt_now"/>
+
+    <Button
+        android:id="@+id/bt_home_home"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_marginTop="200dp"
+        android:layout_marginStart="50dp"
+        android:layout_alignParentLeft="true"
+        android:background="@drawable/shapecircle"
+        android:text="ACCUEIL"
+        android:layout_marginLeft="100dp"
+        android:layout_marginRight="100dp" />
+
+    <Button
+        android:id="@+id/bt_home_history"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_marginTop="200dp"
+        android:layout_marginEnd="50dp"
+        android:layout_alignParentRight="true"
+        android:background="@drawable/shapecircle"
+        android:text="HISTORIQUE"
+        android:layout_marginRight="50dp" />
+
+    <Button
+        android:id="@+id/bt_home_users"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_marginTop="300dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginEnd="100dp"
+        android:layout_marginStart="100dp"
+        android:background="@drawable/shapecircle"
+        android:text="UTILISATEURS"
+        android:layout_marginRight="50dp" />
+
+    <Button
+        android:id="@+id/bt_home_now"
+        android:layout_width="wrap_content"
+        android:layout_height="70dp"
+        android:layout_marginTop="500dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginEnd="100dp"
+        android:layout_marginStart="100dp"
+        android:background="@drawable/bt_now"
+        android:text="En ce moment" />
+
+</RelativeLayout>

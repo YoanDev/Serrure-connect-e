@@ -33,7 +33,7 @@ The CNN recognition scripts are running on an environment test on UNIX/Mac0S Big
 - opencv
 - tensorflow
 
-This 2 paths have to be created from tlocation of the current scripts: 
+These 2 paths have to be created from the location of the current scripts: 
 - /Test_image/train_image : Put folders with the pictures of the autrhorized users (one folder per user)
 - /Test_image/test_img :  Put the test pictures of users 
 

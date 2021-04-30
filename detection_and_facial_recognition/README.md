@@ -27,7 +27,7 @@ Unzip le fichier model_preentraine.zip dans le dossier model_preentraine pour av
 python detection_and_facial_recognition.py --i known_faces
 ```
 
-## CNN recognition 
+## TEST method: CNN recognition 
 
 The CNN recognition scripts are running on an environment test on UNIX/Mac0S Big Sur and python 3.6.7. The following libraries are needed: 
 - opencv
